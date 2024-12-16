@@ -15,27 +15,47 @@ def main(video_path: str):
     detector_queue = mp.Queue()
     renderer_queue = mp.Queue()
 
+    # Create a stop signal using multiprocessing.Event
+    stop_signal = mp.Event()
+
     # Start processes
-    streamer_process = mp.Process(target=streamer, args=(video_path, detector_queue))
-    detector_process = mp.Process(target=detector, args=(detector_queue, renderer_queue))
-    renderer_process = mp.Process(target=renderer, args=(renderer_queue,))
+    streamer_process = mp.Process(target=streamer, args=(video_path, detector_queue, stop_signal))
+    detector_process = mp.Process(target=detector, args=(detector_queue, renderer_queue, stop_signal))
+    renderer_process = mp.Process(target=renderer, args=(renderer_queue, stop_signal))
 
     streamer_process.start()
     detector_process.start()
     renderer_process.start()
 
-    # Wait for processes to finish
-    streamer_process.join()
-    detector_process.join()
-    renderer_process.join()
+    # Wait for the renderer to stop with a timeout
+    renderer_process.join(timeout=5)
+
+    # Set stop signal for other processes
+    stop_signal.set()
+
+    # Wait for other processes to terminate with timeouts
+    streamer_process.join(timeout=2)
+    detector_process.join(timeout=2)
+
+    # Force terminate if processes are still running
+    if streamer_process.is_alive():
+        streamer_process.terminate()
+    if detector_process.is_alive():
+        detector_process.terminate()
+
+    # Clean up queues
+    detector_queue.close()
+    renderer_queue.close()
+    detector_queue.join_thread()
+    renderer_queue.join_thread()
 
 if __name__ == "__main__":
     # Parse command-line arguments
     parser = argparse.ArgumentParser(description="Video Analytics Pipeline")
     parser.add_argument(
-        "-v", "--video", 
-        type=str, 
-        required=True, 
+        "-v", "--video",
+        type=str,
+        required=True,
         help="Path to the video file to be processed."
     )
     args = parser.parse_args()

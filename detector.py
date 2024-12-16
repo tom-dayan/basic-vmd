@@ -1,7 +1,7 @@
 import cv2
 from typing import List, Tuple
 import multiprocessing as mp
-from basic_vmd import detector as basic_vmd_detector  # Import the provided basic_vmd
+from basic_vmd import detector as basic_vmd_detector  # Import the provided detector function
 
 def detector(detector_queue: mp.Queue, renderer_queue: mp.Queue) -> None:
     """
@@ -12,7 +12,6 @@ def detector(detector_queue: mp.Queue, renderer_queue: mp.Queue) -> None:
         detector_queue (mp.Queue): Queue to receive frames from the streamer.
         renderer_queue (mp.Queue): Queue to send frames and detections to the renderer.
     """
-    
     prev_frame = None
     counter = 0
 
@@ -24,12 +23,13 @@ def detector(detector_queue: mp.Queue, renderer_queue: mp.Queue) -> None:
 
         gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-        # Using the logic from basic_vmd.py
         if counter == 0:
+            # Initialize the previous frame on the first iteration
             prev_frame = gray_frame
             counter += 1
         else:
-            detections = basic_vmd_detector(gray_frame, prev_frame)  # Call provided detector function
+            # Use the provided detector function
+            detections = basic_vmd_detector(gray_frame, prev_frame)
             prev_frame = gray_frame
             renderer_queue.put((frame, detections))
             counter += 1

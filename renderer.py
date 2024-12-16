@@ -1,7 +1,16 @@
 import cv2
 from datetime import datetime
 import multiprocessing as mp
-from typing import Tuple, Optional, Any
+from typing import Tuple, Optional, Any, List
+
+"""
+Handles rendering of video frames with optional annotation and blurring.
+
+Features:
+- Draws bounding boxes around detected regions.
+- Overlays a timestamp on each frame.
+- Applies Gaussian blurring to detected regions if enabled.
+"""
 
 # Configurable variables
 BB_COLOR = (0, 255, 0)  # Bounding Box color (Green)
@@ -9,16 +18,16 @@ CLOCK_COLOR = (255, 0, 0)  # Clock color (Blue)
 CLOCK_POSITION = (10, 30)  # Clock position (x, y)
 BLUR_KERNEL = (15, 15)     # Kernel size for Gaussian blur
 
-def apply_blur(frame, detections):
+def apply_blur(frame: cv2.Mat, detections: List[cv2.rectangle]):
     """
-    Applies Gaussian blur to the regions defined by bounding boxes.
+    Blurs regions inside bounding boxes.
 
     Args:
-        frame (ndarray): The frame to process.
-        detections (list of tuples): List of bounding boxes (x, y, w, h).
+        frame: Frame to process.
+        detections: List of bounding boxes (x, y, w, h).
 
     Returns:
-        ndarray: The processed frame with blurred regions.
+        Frame with blurred regions.
     """
     for (x, y, w, h) in detections:
         # Extract the region of interest (ROI)
@@ -31,12 +40,12 @@ def apply_blur(frame, detections):
 
 def renderer(renderer_queue: mp.Queue, stop_signal: Any, enable_blur: bool) -> None:
     """
-    Receives frames and detections, annotates, applies blurring, and displays the video.
+    Processes and renders video frames with optional annotations and blur.
 
     Args:
-        renderer_queue (mp.Queue): Queue to receive frames and detections from the detector.
-        stop_signal (Any): Multiprocessing event used to signal stopping the renderer.
-        enable_blur (bool): Whether to enable blurring of detections.
+        renderer_queue: Queue receiving frames and detections.
+        stop_signal: Event signaling termination.
+        enable_blur: Enables or disables blurring of detected regions.
     """
     while not stop_signal.is_set():
         try:

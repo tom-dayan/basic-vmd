@@ -3,15 +3,21 @@ import multiprocessing as mp
 from basic_vmd import detector as basic_vmd_detector
 from typing import Any
 
+"""
+Processes video frames to detect motion.
+
+Receives frames from the Streamer, performs motion detection, 
+and sends results (frames + detections) to the Renderer.
+"""
+
 def detector(detector_queue: mp.Queue, renderer_queue: mp.Queue, stop_signal: Any) -> None:
     """
-    Processes frames from the detector queue to detect motion using basic_vmd.py 
-    and sends results to the renderer.
+    Detects motion in video frames and sends results to the renderer.
 
     Args:
-        detector_queue (mp.Queue): Queue to receive frames from the streamer.
-        renderer_queue (mp.Queue): Queue to send frames and detections to the renderer.
-        stop_signal (mp.Event): Event to signal stopping the detector.
+        detector_queue: Queue receiving frames from the Streamer.
+        renderer_queue: Queue sending frames and detections to the Renderer.
+        stop_signal: Event signaling termination.
     """
     prev_frame = None
     counter = 0

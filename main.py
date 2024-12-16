@@ -4,13 +4,20 @@ from streamer import streamer
 from detector import detector
 from renderer import renderer
 
+"""
+Orchestrates the video analytics pipeline.
+
+Starts and manages the Streamer, Detector, and Renderer processes.
+Accepts command-line arguments to specify video input and optional blurring.
+"""
+
 def main(video_path: str, enable_blur: bool):
     """
-    Main function to orchestrate the video analytics pipeline.
+    Sets up and starts the pipeline processes.
 
     Args:
-        video_path (str): Path to the video file to be processed.
-        enable_blur (bool): Whether to enable blurring of detections.
+        video_path: Path to the video file.
+        enable_blur: Enables or disables blurring of detected regions.
     """
     # Create queues for inter-process communication
     detector_queue = mp.Queue()
@@ -51,6 +58,11 @@ def main(video_path: str, enable_blur: bool):
     renderer_queue.join_thread()
 
 if __name__ == "__main__":
+    """
+    Command-line usage (see README):
+        python main.py --video <path_to_video> [--blur]
+    """
+    
     # Parse command-line arguments
     parser = argparse.ArgumentParser(description="Video Analytics Pipeline")
     parser.add_argument(

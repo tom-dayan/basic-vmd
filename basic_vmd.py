@@ -1,16 +1,23 @@
 import cv2
 import imutils
 
-def detector(gray_frame, prev_frame):
+"""
+Basic motion detection algorithm.
+
+Compares two consecutive grayscale frames to detect motion.
+Outputs bounding boxes for regions with detected motion.
+"""
+
+def detector(gray_frame: cv2.cvtColor, prev_frame: cv2.cvtColor):
     """
-    Detects motion by comparing the current frame with the previous frame.
+    Detects motion between consecutive frames.
 
     Args:
-        gray_frame (ndarray): The current grayscale frame.
-        prev_frame (ndarray): The previous grayscale frame.
+        gray_frame: Current grayscale frame.
+        prev_frame: Previous grayscale frame.
 
     Returns:
-        list: A list of bounding boxes (x, y, w, h) for detected motion.
+        List of bounding boxes (x, y, w, h) for motion regions.
     """
     diff = cv2.absdiff(gray_frame, prev_frame)
     thresh = cv2.threshold(diff, 25, 255, cv2.THRESH_BINARY)[1]

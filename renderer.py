@@ -7,10 +7,32 @@ from typing import Tuple, Optional, Any
 BB_COLOR = (0, 255, 0)  # Bounding Box color (Green)
 CLOCK_COLOR = (255, 0, 0)  # Clock color (Blue)
 CLOCK_POSITION = (10, 30)  # Clock position (x, y)
+ENABLE_BLUR = True         # Enable or disable blurring of detections
+BLUR_KERNEL = (15, 15)     # Kernel size for Gaussian blur
+
+def apply_blur(frame, detections):
+    """
+    Applies Gaussian blur to the regions defined by bounding boxes.
+
+    Args:
+        frame (ndarray): The frame to process.
+        detections (list of tuples): List of bounding boxes (x, y, w, h).
+
+    Returns:
+        ndarray: The processed frame with blurred regions.
+    """
+    for (x, y, w, h) in detections:
+        # Extract the region of interest (ROI)
+        roi = frame[y:y+h, x:x+w]
+        # Apply Gaussian blur to the ROI
+        blurred_roi = cv2.GaussianBlur(roi, BLUR_KERNEL, 0)
+        # Replace the original ROI with the blurred ROI
+        frame[y:y+h, x:x+w] = blurred_roi
+    return frame
 
 def renderer(renderer_queue: mp.Queue, stop_signal: Any) -> None:
     """
-    Receives frames and detections, annotates, and displays the video.
+    Receives frames and detections, annotates, applies blurring, and displays the video.
 
     Args:
         renderer_queue (mp.Queue): Queue to receive frames and detections from the detector.
@@ -23,6 +45,10 @@ def renderer(renderer_queue: mp.Queue, stop_signal: Any) -> None:
                 break
 
             frame, detections = data
+
+            # Apply blur if enabled
+            if ENABLE_BLUR:
+                frame = apply_blur(frame, detections)
 
             # Draw detections on the frame
             for (x, y, w, h) in detections:

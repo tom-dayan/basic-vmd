@@ -7,7 +7,7 @@ from typing import Any
 Streams frames from a video file.
 
 Reads frames and sends them to the Detector via a multiprocessing queue.
-Supports graceful termination using a stop signal.
+Gracefully terminates on stop signal.
 """
 
 def streamer(video_path: str, detector_queue: mp.Queue, stop_signal: Any) -> None:

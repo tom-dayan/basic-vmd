@@ -2,9 +2,8 @@ import cv2
 import imutils
 
 """
-Basic motion detection algorithm.
+Basic video motion detection algorithm.
 
-Compares two consecutive grayscale frames to detect motion.
 Outputs bounding boxes for regions with detected motion.
 """
 

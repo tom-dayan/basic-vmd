@@ -8,6 +8,7 @@ Processes video frames to detect motion using the supplied basic_vmd.
 
 Receives frames from the Streamer, performs motion detection, 
 and sends results (frames + detections) to the Renderer.
+Gracefully terminates on stop signal.
 """
 
 def detector(detector_queue: mp.Queue, renderer_queue: mp.Queue, stop_signal: Any) -> None:

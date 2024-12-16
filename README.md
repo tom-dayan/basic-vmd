@@ -10,6 +10,8 @@ A modular, multi-process video analytics pipeline implemented in Python, designe
 - `detector.py`: Implements motion detection logic
 - `renderer.py`: Manages frame annotation and display
 - `main.py`: Orchestrates the multiprocessing pipeline
+- `basic_vmd.py`: Simple VMD implementation using OpenCV
+- `People - 6387.mp4`: Sample video file
 
 ## Prerequisites
 

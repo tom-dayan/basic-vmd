@@ -4,7 +4,7 @@ from basic_vmd import detector as basic_vmd_detector
 from typing import Any
 
 """
-Processes video frames to detect motion.
+Processes video frames to detect motion using the supplied basic_vmd.
 
 Receives frames from the Streamer, performs motion detection, 
 and sends results (frames + detections) to the Renderer.
@@ -45,7 +45,7 @@ def detector(detector_queue: mp.Queue, renderer_queue: mp.Queue, stop_signal: An
                 renderer_queue.put((frame, detections), timeout=0.5)  # Reduced timeout
             except mp.queues.Full:
                 if stop_signal.is_set():
-                    break
+                    break  # Stop on signal
                 continue
             counter += 1
 

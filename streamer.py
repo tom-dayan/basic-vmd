@@ -28,7 +28,7 @@ def streamer(video_path: str, detector_queue: mp.Queue, stop_signal: Any) -> Non
             detector_queue.put(frame, timeout=0.5)  # Reduced timeout
         except mp.queues.Full:
             if stop_signal.is_set():
-                break
+                break  # Stop on signal
             continue
         time.sleep(0.01)  # Small sleep to prevent tight-loop hogging
 

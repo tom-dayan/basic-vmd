@@ -4,7 +4,7 @@ import multiprocessing as mp
 from typing import Tuple, Optional, Any, List
 
 """
-Handles rendering of video frames with optional annotation and blurring.
+Handles rendering of video frames with annotation and optional blurring.
 
 Features:
 - Draws bounding boxes around detected regions.
@@ -31,11 +31,11 @@ def apply_blur(frame: cv2.Mat, detections: List[cv2.rectangle]):
     """
     for (x, y, w, h) in detections:
         # Extract the region of interest (ROI)
-        roi = frame[y:y+h, x:x+w]
+        roi = frame[y:y + h, x:x + w]
         # Apply Gaussian blur to the ROI
         blurred_roi = cv2.GaussianBlur(roi, BLUR_KERNEL, 0)
         # Replace the original ROI with the blurred ROI
-        frame[y:y+h, x:x+w] = blurred_roi
+        frame[y:y + h, x:x + w] = blurred_roi
     return frame
 
 def renderer(renderer_queue: mp.Queue, stop_signal: Any, enable_blur: bool) -> None:
